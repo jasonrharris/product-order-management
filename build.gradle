@@ -1,0 +1,47 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            url 'https://plugins.gradle.org/m2/'
+        }
+    }
+    dependencies {
+        classpath('org.springframework.boot:spring-boot-gradle-plugin:2.2.1.RELEASE')
+        classpath('gradle.plugin.com.palantir.gradle.docker:gradle-docker:0.22.1')
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+group 'jasonrharris'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile('org.springframework.boot:spring-boot-starter-web','io.springfox:springfox-swagger2:2.9.2','io.springfox:springfox-swagger-ui:2.9.2')
+    compile( 'org.springframework.boot:spring-boot-starter-data-jpa:2.1.8.RELEASE')
+    runtime('com.h2database:h2:1.4.199')
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+}
+
+apply plugin: 'com.palantir.docker'
+
+task unpack(type: Copy) {
+    dependsOn bootJar
+    from(zipTree(tasks.bootJar.outputs.files.singleFile))
+    into('build/dependency')
+}
+
+sourceCompatibility = 1.12
+targetCompatibility = 1.12
+
+docker {
+    name "jasonrharris/product_and_order_service"
+    copySpec.from(tasks.unpack.outputs).into('dependency')
+    buildArgs(['DEPENDENCY': 'dependency'])
+}
