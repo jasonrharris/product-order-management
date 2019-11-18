@@ -11,6 +11,14 @@ An H2 instance has been specified to provide Persistence, as per `resources/appl
 
 `resources/data.sql` contains two products and prices `inserts` (along with sequence declarations) which are used to give the Application something to work with at start up.
 
+## Assumptions
+- Only one current price is required per Product
+- A Price History is required
+- Although a Price contains a Currency, mostly for completeness, supporting multiple currencies on the server is not required
+- When a Price change is made to a Product, it is added to the top of the Price History by Date and this becomes the current Price
+- Orders consist of a number of Order Items, each of which is for one Product but can contain any number of them.
+- When Orders are placed, a reference to the current price is added to the Order. This doesn't change, so I've assumed that the historical price will not be modified and so the API will not provide a way to edit historical prices. The alternative is to hard write the price into the Order Item table.
+
 ### Usage and Documentation
 
 Once the container is running, go to http://localhost:8080/productAndOrderManager/swagger-ui.html to see how the REST API is structured and to try out examples. There are no orders set up in the initial data set, so `orders (POST)` will need to be called a few times to then test the 'retrieve all within date range' call. To find product and price ids, execute the `products` GET call.
