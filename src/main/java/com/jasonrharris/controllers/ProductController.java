@@ -26,7 +26,6 @@ import java.util.Optional;
         produces = {"application/json"},
         schemes = {SwaggerDefinition.Scheme.HTTP}
 )
-
 public class ProductController {
 
     private final ProductRepository productRepository;
@@ -51,7 +50,7 @@ public class ProductController {
     /**
      * Create a new product
      */
-    @ApiOperation(value = "Adds a new Product", response = List.class)
+    @ApiOperation(value = "Adds a new Product", response = Product.class)
     @PostMapping("/products")
     public Product addProduct(@RequestBody Product newProduct) {
         Optional<Price> newPrice = newProduct.getCurrentPrice();
@@ -67,7 +66,7 @@ public class ProductController {
     /**
      * Updates an existing product
      */
-    @ApiOperation(value = "Updates an existing product", response = List.class)
+    @ApiOperation(value = "Updates an existing product", response = Product.class)
     @PutMapping("/products/{id}")
     public Product updateProduct(@RequestBody Product updatedProduct, @ApiParam(value = "The ID of the product to be updated", required = true, example = "1") @PathVariable long id) {
         Product matchingProduct = productRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("No product has Id " + id));

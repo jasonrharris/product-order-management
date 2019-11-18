@@ -11,8 +11,9 @@ import javax.persistence.*;
 @Entity
 public class Product {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    @SequenceGenerator(name= "PROD_SEQUENCE", sequenceName = "PROD_SEQUENCE_ID", initialValue=1, allocationSize = 1)
+    @GeneratedValue(strategy=GenerationType.AUTO, generator="PROD_SEQUENCE")
+    private final long id;
 
     @Column
     private final String name;
@@ -69,10 +70,12 @@ public class Product {
 
     @Override
     public String toString() {
-        return "Product{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", price=" + currentPrice +
-                '}';
+        StringBuilder prodStringBuilder = new StringBuilder();
+        prodStringBuilder.append("Product{").append("id=").append(id).append(", name='").append(name).append('\'');
+        if (currentPrice != null) {
+            prodStringBuilder.append(", price=").append(currentPrice.getAmount()).append(", currency=").append(currentPrice.getCurrency());
+        }
+
+        return prodStringBuilder.append('}').toString();
     }
 }

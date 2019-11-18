@@ -1,20 +1,32 @@
 package com.jasonrharris.products;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import com.jasonrharris.converters.LocalDateTimeConverter;
+import com.jasonrharris.orders.OrderItem;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.Currency;
-import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
 
 @Entity
 public final class Price implements Comparable<Price> {
+    static final BigDecimal UNSET_AMOUNT = new BigDecimal("-1");
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id = 0L;
+    @SequenceGenerator(name= "PRICE_SEQUENCE", sequenceName = "PRICE_SEQUENCE_ID", initialValue=1, allocationSize = 1)
+    @GeneratedValue(strategy=GenerationType.AUTO, generator="PRICE_SEQUENCE")
+    private final long id;
 
     @ManyToOne
     @JoinColumn(name = "product_id")
@@ -24,29 +36,32 @@ public final class Price implements Comparable<Price> {
     private final BigDecimal amount;
     @Column
     private final Currency currency;
-    @Temporal(TemporalType.TIMESTAMP)
-    private
-    Date creationDateTime;
+    @Column
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    private final LocalDateTime creationDateTime;
 
-    private Price(Product product, BigDecimal amount, Currency currency) {
+    private Price(long id,Product product, BigDecimal amount, Currency currency) {
+        this.id = id;
         this.product = product;
         this.amount = amount;
         this.currency = currency;
-        creationDateTime = new Date();
+        creationDateTime = LocalDateTime.now();
     }
 
     @SuppressWarnings("unused")
+    public
         //default required for Hibernate
     Price() {
-        this(new Product(), BigDecimal.ZERO, Currency.getInstance(Locale.getDefault()));
+        this(0L, new Product(), UNSET_AMOUNT, Currency.getInstance(Locale.getDefault()));
     }
 
     public static Price createPrice(Product product, String amount, String currency) {
         return createPrice(product, new BigDecimal(amount).setScale(2, RoundingMode.HALF_UP), Currency.getInstance(currency));
     }
 
-    static Price createPrice(Product product, BigDecimal amount, Currency currency) {
-        return new Price(product, amount, currency);
+    public static Price createPrice(Product product, BigDecimal amount, Currency currency) {
+        return new Price(0L, product, amount, currency);
     }
 
     public long getId() {
@@ -61,7 +76,7 @@ public final class Price implements Comparable<Price> {
         return currency;
     }
 
-    public Date getCreationDateTime() {
+    public LocalDateTime getCreationDateTime() {
         return creationDateTime;
     }
 
@@ -78,8 +93,8 @@ public final class Price implements Comparable<Price> {
                 (id == 0L && amount.equals(price.amount)
                         &&
                         currency.equals(price.currency)
-                        && product.equals(price.product))
-                        || (id != 0L && id == price.id);
+                        && Objects.equals(product, price.product)
+                        || (id != 0L && id == price.id));
     }
 
     @Override
@@ -107,5 +122,10 @@ public final class Price implements Comparable<Price> {
         } else {
             return currency.toString().compareTo(price.currency.toString());
         }
+    }
+
+    @JsonIgnore
+    public boolean isUnset() {
+        return this.amount.compareTo(UNSET_AMOUNT) <= 0;
     }
 }
