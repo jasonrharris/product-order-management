@@ -11,7 +11,7 @@ An H2 instance has been specified to provide Persistence, as per `resources/appl
 
 `resources/data.sql` contains two products and prices `inserts` (along with sequence declarations) which are used to give the Application something to work with at start up.
 
-## Assumptions
+## Assumptions and Decisions
 - Only one current price is required per Product
 - A Price History is required
 - Although a Price contains a Currency, mostly for completeness, supporting multiple currencies on the server is not required
