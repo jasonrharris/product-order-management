@@ -6,7 +6,6 @@ import com.jasonrharris.products.Price;
 import com.jasonrharris.repositories.OrderItemRepository;
 import com.jasonrharris.repositories.OrderRepository;
 import com.jasonrharris.repositories.PriceRepository;
-import com.jasonrharris.repositories.ProductRepository;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -34,7 +33,7 @@ public class OrderController {
     private final OrderItemRepository orderItemRepository;
     private final PriceRepository priceRepository;
 
-    public OrderController(@Autowired OrderRepository orderRepository, @Autowired OrderItemRepository orderItemRepository, @Autowired PriceRepository priceRepository, @Autowired ProductRepository productRepository) {
+    public OrderController(@Autowired OrderRepository orderRepository, @Autowired OrderItemRepository orderItemRepository, @Autowired PriceRepository priceRepository) {
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
         this.priceRepository = priceRepository;
@@ -77,7 +76,7 @@ public class OrderController {
     }
 
     /*
-    Required by Swagger to document to `addOrder` POST
+    Required by Swagger to document the `addOrder` POST
      */
     @SuppressWarnings("unused") // getters and setters needed for Swagger
     public static class OrderBodyType {

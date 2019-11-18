@@ -12,8 +12,6 @@ import com.jasonrharris.repositories.OrderItemRepository;
 import com.jasonrharris.repositories.OrderRepository;
 import com.jasonrharris.repositories.PriceRepository;
 import com.jasonrharris.repositories.ProductRepository;
-import com.jayway.jsonpath.Criteria;
-import com.jayway.jsonpath.Filter;
 import org.hamcrest.number.BigDecimalCloseTo;
 import org.junit.Assert;
 import org.junit.Before;
@@ -25,8 +23,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-
-import static org.hamcrest.Matchers.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
