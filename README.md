@@ -12,7 +12,7 @@ An H2 instance has been specified to provide Persistence, as per `resources/appl
 `resources/data.sql` contains two products and prices `inserts` (along with sequence declarations) which are used to give the Application something to work with at start up.
 
 ## Assumptions and Decisions
-- Only one current price is required per Product
+- Only one current price is required per Product. Currently, this is the last entered Price (so latest Datetime of Price per Product) and shuold probably be an extra boolean flag on Price, suitably constrained by the table definition to only allow one 'true' value per Product (and Ccy if server-side control of mutliple currecncies is required) 
 - A Price History is required
 - Although a Price contains a Currency, mostly for completeness, supporting multiple currencies on the server is not required
 - When a Price change is made to a Product, it is added to the top of the Price History by Date and this becomes the current Price
